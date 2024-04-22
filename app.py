@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect
 from models import db, connect_db, User
+from form import RegistrationFrom, LoginForm
 
 app = Flask(__name__)
 
@@ -21,5 +22,5 @@ def index():
 @app.route('/register')
 def register():
     """Register form for users"""
-    
+
 
