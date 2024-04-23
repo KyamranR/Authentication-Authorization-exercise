@@ -72,6 +72,8 @@ def logout_user():
 @app.route('/secret')
 def secret():
     """Secret route"""
+    if 'username' not in session:
+        return redirect('/register')
     return 'You made it!'
 
 
