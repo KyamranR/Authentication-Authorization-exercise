@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, session
+from flask import Flask, render_template, redirect, session, flash
 from models import db, connect_db, User
 from form import RegistrationFrom, LoginForm
 
@@ -32,11 +32,17 @@ def register():
         first_name = form.first_name.data
         last_name = form.last_name.data
 
+        exiting_user = User.query.filter_by(username=username).first()
+        if exiting_user:
+            flash('User already exists. Please choose different username.', 'error')
+            return redirect('/register')
+
         new_user = User.register(username, password, email, first_name, last_name)
         db.session.add(new_user)
         db.session.commit()
-
+        session['username'] = new_user.username
         return redirect('/secret')
+
     return render_template('register.html', form=form)
 
 
@@ -51,12 +57,17 @@ def login():
         user = User.authenticate(username, password)
 
         if user:
-            session['user_id'] = user.id
+            session['username'] = user.username
             return redirect('/secret')
-
-
+        else:
+            form.username.errors = ['Invalid username/password.']
 
     return render_template('login.html', form=form)
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout_user():
+    session.pop('username', None)
+    return redirect('/')
 
 @app.route('/secret')
 def secret():
