@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect
 from models import db, connect_db, User
 from form import RegistrationFrom, LoginForm
 
+
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'verysecret'
@@ -31,11 +32,33 @@ def register():
         first_name = form.first_name.data
         last_name = form.last_name.data
 
-        new_user = User(username=username, password=password, email=email, first_name=first_name, last_name=last_name )
-        db.session.add(new_user)
+        new_user = User.register(username, password, email, first_name, last_name)
         db.session.commit()
 
         return redirect('/secret')
     return render_template('register.html', form=form)
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Login form for users"""
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+
+
+
+    return render_template('login.html', form=form)
+
+@app.route('/secret')
+def secrect():
+    """Secret route"""
+    return 'You made it!'
+
+
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
