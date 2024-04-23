@@ -74,7 +74,7 @@ def secret():
     """Secret route"""
     if 'username' not in session:
         return redirect('/register')
-    return 'You made it!'
+    return render_template('secret.html')
 
 
 
