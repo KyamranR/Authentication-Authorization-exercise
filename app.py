@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, session
 from models import db, connect_db, User
 from form import RegistrationFrom, LoginForm
 
@@ -20,7 +20,7 @@ def index():
     """Rediredt to register form"""
     return redirect('/register')
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     """Register form for users"""
 
@@ -33,6 +33,7 @@ def register():
         last_name = form.last_name.data
 
         new_user = User.register(username, password, email, first_name, last_name)
+        db.session.add(new_user)
         db.session.commit()
 
         return redirect('/secret')
@@ -47,12 +48,18 @@ def login():
         username = form.username.data
         password = form.password.data
 
+        user = User.authenticate(username, password)
+
+        if user:
+            session['user_id'] = user.id
+            return redirect('/secret')
+
 
 
     return render_template('login.html', form=form)
 
 @app.route('/secret')
-def secrect():
+def secret():
     """Secret route"""
     return 'You made it!'
 
