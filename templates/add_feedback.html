@@ -1,0 +1,12 @@
+{% extends 'base.html' %} {% block title %}Add Feedback{% endblock %} {% block
+content %}
+<h1>Add Feedback</h1>
+<form
+  action="{{ url_for('add_feedback', username=user.username) }}"
+  method="post"
+>
+  {{ form.csrf_token }} {{ form.title.label }}: {{ form.title }}<br />
+  {{ form.content.label }}: {{ form.content }}<br />
+  <button type="submit">Add Feedback</button>
+</form>
+{% endblock %}

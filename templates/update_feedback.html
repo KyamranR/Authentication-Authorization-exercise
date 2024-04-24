@@ -1,0 +1,12 @@
+{% extends 'base.html' %} {% block title %}Update Feedback{% endblock %} {%
+block content %}
+<h1>Update Feedback</h1>
+<form
+  action="{{ url_for('update_feedback', feedback_id=feedback.id) }}"
+  method="post"
+>
+  {{ form.csrf_token }} {{ form.title.label }}: {{ form.title }}<br />
+  {{ form.content.label }}: {{ form.content }}<br />
+  <button type="submit">Update Feedback</button>
+</form>
+{% endblock %}
