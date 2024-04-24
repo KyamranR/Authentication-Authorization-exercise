@@ -39,3 +39,20 @@ class User(db.Model):
             return user
         else:
             return False
+        
+
+
+class Feedback(db.Model):
+    """Creating feedback model"""
+
+    __tablename__ = 'feedbacks'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    username = db.Column(db.String(20), db.ForeignKey('users.username'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('feedbacks', cascade='all, delete-orphan'))
+
+    def __repr__(self):
+        return f'<Feedback id={self.id} title={self.title} username={self.username}>'
