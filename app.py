@@ -41,7 +41,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         session['username'] = new_user.username
-        return redirect(url_for('logged_user'))
+        return redirect(url_for('logged_user', username=session['username']))
 
     return render_template('register.html', form=form)
 
@@ -81,7 +81,8 @@ def logged_user(username):
         return 'User not found.', 404
         
     feedbacks = Feedback.query.filter_by(username=username).all()
-    return render_template('secret.html', user=user, feedbacks=feedbacks)
+    form = FeedbackForm()
+    return render_template('secret.html', user=user, feedbacks=feedbacks, form=form)
         
 @app.route('/users/<username>/delete', methods=['POST'])
 def delete_user(username):
@@ -136,9 +137,9 @@ def update_feedback(feedback_id):
         
         db.session.commit()
         flash('Feedback updated successfully.', 'success')
-        return redirect(url_for('user_profile', username=feedback.username))
+        return redirect(url_for('logged_user', username=feedback.username))
     
-    return render_template('update_feedback.html', form=form)
+    return render_template('update_feedback.html', form=form, feedback=feedback)
 
 
 @app.route('/feedback/<int:feedback_id>/delete', methods=['POST'])
@@ -152,7 +153,7 @@ def delete_feedback(feedback_id):
     db.session.delete(feedback)
     db.session.commit()
     flash('Feedback deleted successfully.', 'success')
-    return redirect(url_for('user_profile', username=feedback.username))
+    return redirect(url_for('logged_user', username=feedback.username))
 
 
 
