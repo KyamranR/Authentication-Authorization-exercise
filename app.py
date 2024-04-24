@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, session, flash
+from flask import Flask, render_template, redirect, session, flash, url_for
 from models import db, connect_db, User
 from form import RegistrationFrom, LoginForm
 
@@ -41,7 +41,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         session['username'] = new_user.username
-        return redirect('/secret')
+        return redirect(url_for('logged_user'))
 
     return render_template('register.html', form=form)
 
@@ -58,7 +58,7 @@ def login():
 
         if user:
             session['username'] = user.username
-            return redirect('/secret')
+            return redirect(url_for('logged_user', username=user.username))
         else:
             form.username.errors = ['Invalid username/password.']
 
@@ -69,12 +69,17 @@ def logout_user():
     session.pop('username', None)
     return redirect('/')
 
-@app.route('/secret')
-def secret():
-    """Secret route"""
-    if 'username' not in session:
-        return redirect('/register')
-    return render_template('secret.html')
+@app.route('/users/<username>')
+def logged_user(username):
+    """Logged in user information"""
+    if 'username' not in session or session['username'] != username:
+        return redirect('/login')
+    
+    user = User.query.filter_by(username=username).first()
+    if user:
+        return render_template('secret.html', user=user)
+    else:
+        return 'User not found.', 404
 
 
 
